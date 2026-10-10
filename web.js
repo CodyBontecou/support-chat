@@ -119,3 +119,5 @@ export function WebChat({
     </section>
   );
 }
+
+export { WebSupport } from './support-web.js';

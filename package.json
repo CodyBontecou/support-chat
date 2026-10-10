@@ -18,7 +18,8 @@
     "*.js",
     "jsconfig*.json",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "IMPLEMENTATION.md"
   ],
   "peerDependencies": {
     "react": ">=19",

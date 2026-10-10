@@ -22,11 +22,11 @@ React 19+ is required. The native entry point additionally requires React Native
 Create a stable request adapter using the host's existing authenticated HTTP client. The host must handle authentication, JSON parsing and non-success responses. The callback returns the parsed `SupportState`, not a `Response` object.
 
 ```js
-import { createSupportRequest } from '@codybontecou/support-chat';
+import { createSupportRequest } from "@codybontecou/support-chat";
 
 // authenticatedJson supplies the host's owner credential, content-type,
 // JSON parsing and error handling. Do not use a connected agent credential.
-const request = createSupportRequest(authenticatedJson, '/api/support');
+const request = createSupportRequest(authenticatedJson, "/api/support");
 ```
 
 Keep the adapter stable across renders. On sign-in/account changes, create a new adapter and remount the chat with an account-specific React `key`. This clears conversation state and drafts and prevents a previous account's pending request from updating the next account's view. Supply `active={false}` when the screen is hidden/backgrounded; the host owns navigation and lifecycle detection.
@@ -45,7 +45,7 @@ Every successful response returns `{conversationId, messages, hasMore, before, a
 ## Web
 
 ```jsx
-import { WebChat } from '@codybontecou/support-chat/web';
+import { WebChat } from "@codybontecou/support-chat/web";
 
 function Button({ variant, ...props }) {
   return <button {...props} />;
@@ -65,7 +65,7 @@ The host supplies its button. The view uses Tailwind utility classes and semanti
 ## React Native
 
 ```jsx
-import { NativeChat } from '@codybontecou/support-chat/native';
+import { NativeChat } from "@codybontecou/support-chat/native";
 
 <NativeChat
   key={accountId}
@@ -87,8 +87,23 @@ Optional `unavailableContent` replaces the unavailable notice. The host owns saf
 
 ## Extraction and verification
 
-myself.md currently has no chat route, settings action or dashboard chat panel. Its server support service, encrypted store, Discord transport, setup script, account-deletion cleanup and MCP operations remain in place. Agent-access approval requires a future owner client integration; the server's old chat deep links cannot complete that handoff while the views are removed.
+The v1 integration adds a phone support route, Settings action and dashboard inbox; see [IMPLEMENTATION.md](./IMPLEMENTATION.md). The older single-conversation client remains compatible with its retained server. Its server support service, encrypted store, Discord transport, setup script, account-deletion cleanup and MCP operations remain in place. Agent-access approval requires a future owner client integration; the server's old chat deep links cannot complete that handoff while the views are removed.
 
 From myself.md, run `npm run format`, `npm run check` and `npm run verify:support`. The aggregate gate includes this package's strict native/web JavaScript checks, lint and unused-code checks. Runtime verification mounts the exported web component and adapter against the retained authenticated server using a deterministic Discord fixture. It checks messaging, retries, authorization, agent controls and cleanup without sending live Discord messages. Native device/keyboard behavior and live Discord delivery are not covered by that fixture.
 
 For standalone development, run `npm install` and `npm run check`. Development dependencies include React Native for the native type check; web consumers do not need it. `npm pack --dry-run` lists the distributable source, documentation, license and type-check configs. Authentication and a compatible support server must be integrated by each consuming app.
+
+## Isobot v1 inbox
+
+`createSupportClient`, `useSupportInbox`, `WebSupport`, and `NativeSupport` expose the versioned account inbox and independent conversations. The host transport supplies owner authentication to `/api/support/v1`; it must never include Isobot service credentials in the app. Remount with an account-specific key and pass `active={focused && foreground}` on mobile.
+
+```js
+import { createSupportClient } from "@codybontecou/support-chat";
+import { WebSupport } from "@codybontecou/support-chat/web";
+const request = createSupportClient(authenticatedJson);
+// <WebSupport key={accountId} request={request} data={dataAdapter} />
+```
+
+A data adapter provides `collect(request)` returning `{category, capturedAt, content}` and `digest(content)` returning a SHA-256 hex digest. Collection must stay local; the component shows an editable preview and sends only after acceptance. `NativeSupport` additionally requires the existing host primitives/colors, a secure `newId` function, and optional `initialConversationId` and `onEnableNotifications` callbacks. The package itself adds no native dependency.
+
+See [implementation and deployment notes](./IMPLEMENTATION.md) for the Isobot service, consent lifecycle, notification integration, Codex workflow, verification, and live-test boundaries.

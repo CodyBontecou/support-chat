@@ -152,3 +152,5 @@ const styles = StyleSheet.create({
     textAlignVertical: 'top',
   },
 });
+
+export { NativeSupport } from './support-native.js';
