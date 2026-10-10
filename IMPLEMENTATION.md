@@ -16,7 +16,15 @@ Codex dispatch is fixed to `CodyBontecou/support-chat` and its `main` workflow. 
 
 ## Deployment
 
-These are source changes; nothing has been deployed, pushed, or sent to live Discord/GitHub during implementation.
+Deployment on 2026-10-10:
+
+- Isobot Worker: version `8ae4ce01-8b7c-48f8-bbed-24900654d168`, with all three support Durable Object bindings and distinct credentials.
+- myself.md Worker/dashboard: version `1eaf0e7a-487d-49b3-a336-a200f9f7785a`. Test at https://myself.md/dashboard?view=support.
+- Isobot Discord relay: deployed to the existing Fly machine; bot ready, health check passing, existing support channel verified private.
+- support-chat client and workflow: published to `main` at `107b2ef`. Callback secrets configured; Actions draft PR permission enabled with explicit approval. `CODEX_API_KEY` configured with the dedicated restricted Isotech key; expires 2026-11-09. A read-only OpenAI model-list request returned 200. No implementation task has been dispatched yet.
+- iPhone preview: EAS build `7409a2e9-4b91-4901-b275-51457cc9382b` failed because the saved profile lacks Push Notifications / `aps-environment`. Refreshing Apple provisioning is pending authorization.
+
+Live service reads returned 200 with the service credential; the bridge credential returned 200 for relay jobs; the service credential was rejected with 401 on the bridge. The deployed dashboard bundle includes the new support UI, and unauthenticated host requests return 401. No test conversations, Discord messages, GitHub issues, or implementation tasks were created during these checks.
 
 | Location                    | Required configuration                                                                                                                                                                                                |
 | --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
